@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '../api/axios';
-import { Sparkles, Send as SendIcon, Layers, MessageSquare, Lightbulb } from 'lucide-react';
+import { Sparkles, Send as SendIcon, Layers, MessageSquare, Lightbulb, Image, Copy, Check } from 'lucide-react';
 
 const EXAMPLE_PROMPTS = [
   'Target customers who spent more than ₹5000 in the last 60 days',
@@ -8,12 +8,14 @@ const EXAMPLE_PROMPTS = [
   'Find repeat buyers with more than 3 orders',
   'Draft a WhatsApp message for VIP customers',
   'Increase repeat purchases this month',
+  'Generate an image to bring back churned users',
 ];
 
 export default function AICopilot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copiedIndex, setCopiedIndex] = useState(null);
 
   const sendMessage = async (text) => {
     if (!text.trim()) return;
@@ -34,6 +36,11 @@ export default function AICopilot() {
         aiContent = `I've identified an audience for you: **${data.suggestedName || 'Custom Segment'}**\n\nHere are the segment rules I parsed:`;
         actions = [
           { type: 'segment', label: 'Create this segment', data: { name: data.suggestedName, rules: data.rules } }
+        ];
+      } else if (data.type === 'image_prompt') {
+        aiContent = `🎨 **Image Prompt Generated** — Objective: **${data.objective || 'Marketing Visual'}**`;
+        actions = [
+          { type: 'copy', label: 'Copy Prompt', data: { text: data.prompt } }
         ];
       } else if (data.type === 'message') {
         aiContent = `Here's a draft message for your campaign:\n\n> ${data.draft}\n\nChannel: **${data.channel || 'WhatsApp'}**`;
@@ -61,7 +68,25 @@ export default function AICopilot() {
     setLoading(false);
   };
 
-  const handleAction = async (action) => {
+  const handleAction = async (action, msgIndex) => {
+    if (action.type === 'copy') {
+      try {
+        await navigator.clipboard.writeText(action.data.text);
+        setCopiedIndex(msgIndex);
+        setTimeout(() => setCopiedIndex(null), 2000);
+      } catch {
+        // Fallback for non-HTTPS contexts
+        const textarea = document.createElement('textarea');
+        textarea.value = action.data.text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        setCopiedIndex(msgIndex);
+        setTimeout(() => setCopiedIndex(null), 2000);
+      }
+      return;
+    }
     if (action.type === 'segment') {
       try {
         await api.post('/segments', {
@@ -134,17 +159,49 @@ export default function AICopilot() {
                     </div>
                   )}
 
+                  {/* Image Prompt details display */}
+                  {msg.rawData?.type === 'image_prompt' && msg.rawData?.prompt && (
+                    <div className="mt-3 space-y-3">
+                      <div className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-xl p-4">
+                        <p className="text-xs font-bold text-violet-700 mb-2 flex items-center gap-1.5">
+                          <Image className="h-3.5 w-3.5" /> Production-Ready Prompt
+                        </p>
+                        <p className="text-[12px] leading-relaxed text-slate-700 whitespace-pre-wrap font-mono bg-white/60 rounded-lg p-3 border border-violet-100">
+                          {msg.rawData.prompt}
+                        </p>
+                      </div>
+                      {msg.rawData.details && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.entries(msg.rawData.details).map(([key, value]) => (
+                            <div key={key} className="bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                              <p className="text-[11px] text-slate-700 leading-snug">{value}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Action buttons */}
                   {msg.actions?.length > 0 && (
                     <div className="mt-4 flex gap-2">
                       {msg.actions.map((action, j) => (
                         <button
                           key={j}
-                          onClick={() => handleAction(action)}
-                          className="text-[11px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 transition-colors cursor-pointer flex items-center gap-1.5"
+                          onClick={() => handleAction(action, i)}
+                          className={`text-[11px] font-bold px-3 py-1.5 rounded-lg border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                            action.type === 'copy' && copiedIndex === i
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : action.type === 'copy'
+                              ? 'bg-violet-50 hover:bg-violet-100 text-violet-700 border-violet-100'
+                              : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-100'
+                          }`}
                         >
-                          <Layers className="h-3 w-3" />
-                          {action.label}
+                          {action.type === 'copy'
+                            ? (copiedIndex === i ? <><Check className="h-3 w-3" /> Copied!</> : <><Copy className="h-3 w-3" /> {action.label}</>)
+                            : <><Layers className="h-3 w-3" /> {action.label}</>
+                          }
                         </button>
                       ))}
                     </div>
@@ -224,6 +281,15 @@ export default function AICopilot() {
               <p className="text-slate-500 leading-relaxed text-xs font-medium">
                 "Increase repeat purchases this month"<br />
                 "Run a win-back campaign for lapsed shoppers"
+              </p>
+            </div>
+            <div className="space-y-1.5">
+              <h4 className="font-bold text-slate-800 flex items-center gap-1.5">
+                <Image className="h-4 w-4 text-violet-500" /> Image & Creatives
+              </h4>
+              <p className="text-slate-500 leading-relaxed text-xs font-medium">
+                "Generate an image to bring back churned users"<br />
+                "Design a visual for our Diwali sale campaign"
               </p>
             </div>
           </div>

@@ -1,0 +1,195 @@
+# AI Project Handoff Document Generator
+
+You are about to transfer this project to another AI agent.
+
+Create a COMPLETE project handoff document so another AI can continue development with zero prior context.
+
+Output the following sections in detail:
+
+## 1. Project Overview
+
+* Project name
+* Purpose
+* Problem being solved
+* Target users
+* Core features
+* Current project status
+
+## 2. Business Requirements
+
+List all requirements gathered so far.
+
+Include:
+
+* Functional requirements
+* Non-functional requirements
+* User stories
+* Constraints
+* Assumptions
+
+## 3. Technical Architecture
+
+Describe:
+
+* Frontend stack
+* Backend stack
+* Database
+* APIs
+* Authentication
+* Hosting
+* Infrastructure
+* Third-party services
+
+Include architecture diagrams in text form when possible.
+
+## 4. Folder Structure
+
+Provide complete project structure.
+
+For each important file explain:
+
+* Purpose
+* Dependencies
+* Key logic
+
+Example:
+
+src/
+├── components/
+├── pages/
+├── services/
+├── hooks/
+
+Explain every major file.
+
+## 5. Database Design
+
+Provide:
+
+* ERD description
+* Tables
+* Columns
+* Relationships
+* Indexes
+* Constraints
+* Migrations completed
+
+## 6. Implemented Features
+
+For each feature provide:
+
+* Description
+* Files involved
+* Status
+* Known limitations
+
+Mark:
+
+✅ Completed
+
+⚠ Partially completed
+
+❌ Not started
+
+## 7. Current Work In Progress
+
+Describe exactly:
+
+* What was being built
+* What was completed
+* What remains
+* Last implementation attempt
+
+## 8. Remaining Tasks
+
+Create a prioritized task list:
+
+Priority 1
+Priority 2
+Priority 3
+
+For each task provide:
+
+* Goal
+* Files affected
+* Dependencies
+* Estimated complexity
+
+## 9. Coding Standards
+
+Document:
+
+* Naming conventions
+* Design patterns
+* Architecture patterns
+* State management approach
+* Error handling strategy
+* Testing strategy
+
+## 10. Important Decisions
+
+List all architectural and business decisions already made.
+
+For each decision include:
+
+* Decision
+* Reasoning
+* Alternatives rejected
+
+## 11. Environment Setup
+
+Provide:
+
+* Required software
+* Installation steps
+* Environment variables
+* Secrets placeholders
+* Build commands
+* Run commands
+
+## 12. Known Bugs
+
+List:
+
+* Bug description
+* Cause
+* Impact
+* Suggested fix
+
+## 13. Risks & Technical Debt
+
+Explain:
+
+* Technical debt
+* Performance concerns
+* Security concerns
+* Scalability concerns
+
+## 14. Context Window Knowledge Dump
+
+Summarize ALL important information learned throughout the conversation that may not exist in code.
+
+Include:
+
+* User preferences
+* Business rules
+* Design decisions
+* Hidden assumptions
+* Edge cases discovered
+
+## 15. Exact Next Steps For New AI
+
+Provide an action plan:
+
+Step 1
+Step 2
+Step 3
+...
+
+The new AI should be able to immediately continue implementation without asking for additional context.
+
+## 16. Resume Prompt
+
+Create a final prompt:
+
+"Continue this project from the current state. Read the handoff document first, understand the architecture, verify existing implementation, then complete the remaining tasks in priority order without rebuilding already completed functionality."

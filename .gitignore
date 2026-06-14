@@ -35,4 +35,4 @@ lerna-debug.log*
 Thumbs.db
 
 # Media & Temp/Artifacts
-media/
+/media/

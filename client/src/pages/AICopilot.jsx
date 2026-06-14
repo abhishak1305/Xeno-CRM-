@@ -165,20 +165,33 @@ export default function AICopilot() {
                       {/* Render the generated image */}
                       <div className="rounded-xl overflow-hidden border border-violet-200 shadow-sm relative group bg-slate-100 min-h-[200px] flex items-center justify-center">
                         {(() => {
-                          const shortPrompt = msg.rawData.details?.subject 
-                            ? `${msg.rawData.details.subject}. Style: ${msg.rawData.details.style}`
-                            : msg.rawData.prompt.substring(0, 300);
+                          // Extract a short keyword for Unsplash based on objective or subject
+                          let keyword = 'marketing';
+                          if (msg.rawData.objective) {
+                            if (msg.rawData.objective.includes('Churn')) keyword = 'welcome,door';
+                            else if (msg.rawData.objective.includes('Upselling')) keyword = 'premium,luxury,shopping';
+                            else if (msg.rawData.objective.includes('Retention')) keyword = 'loyalty,reward,vip';
+                            else if (msg.rawData.objective.includes('Acquisition')) keyword = 'onboarding,welcome,technology';
+                            else if (msg.rawData.objective.includes('Promotional')) keyword = 'sale,discount,retail';
+                            else if (msg.rawData.objective.includes('Seasonal')) keyword = 'festival,celebration,shopping';
+                          }
+
                           return (
                             <img 
-                              src={`https://image.pollinations.ai/prompt/${encodeURIComponent(shortPrompt)}?width=800&height=450&nologo=true`} 
-                              alt={msg.rawData.details?.subject || "AI Generated"}
+                              src={`https://source.unsplash.com/800x450/?${keyword}`} 
+                              alt={msg.rawData.details?.subject || "AI Generated Concept"}
                               className="w-full h-auto object-cover"
                               loading="lazy"
+                              onError={(e) => {
+                                // Fallback if Unsplash fails
+                                e.target.onerror = null; 
+                                e.target.src = `https://placehold.co/800x450/e0e7ff/4f46e5?text=${encodeURIComponent(msg.rawData.objective || 'Campaign Visual')}`;
+                              }}
                             />
                           );
                         })()}
                         <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                          AI Generated
+                          Concept Reference
                         </div>
                       </div>
 

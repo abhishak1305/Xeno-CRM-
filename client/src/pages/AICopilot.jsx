@@ -164,12 +164,19 @@ export default function AICopilot() {
                     <div className="mt-3 space-y-3">
                       {/* Render the generated image */}
                       <div className="rounded-xl overflow-hidden border border-violet-200 shadow-sm relative group bg-slate-100 min-h-[200px] flex items-center justify-center">
-                        <img 
-                          src={`https://image.pollinations.ai/prompt/${encodeURIComponent(msg.rawData.prompt)}?width=800&height=450&nologo=true`} 
-                          alt={msg.rawData.details?.subject || "AI Generated"}
-                          className="w-full h-auto object-cover"
-                          loading="lazy"
-                        />
+                        {(() => {
+                          const shortPrompt = msg.rawData.details?.subject 
+                            ? `${msg.rawData.details.subject}. Style: ${msg.rawData.details.style}`
+                            : msg.rawData.prompt.substring(0, 300);
+                          return (
+                            <img 
+                              src={`https://image.pollinations.ai/prompt/${encodeURIComponent(shortPrompt)}?width=800&height=450&nologo=true`} 
+                              alt={msg.rawData.details?.subject || "AI Generated"}
+                              className="w-full h-auto object-cover"
+                              loading="lazy"
+                            />
+                          );
+                        })()}
                         <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
                           AI Generated
                         </div>
